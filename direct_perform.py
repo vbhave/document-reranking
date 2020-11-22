@@ -54,6 +54,7 @@ for qid in q_line:
         doc_id = row['did']
         data = corpus.loc[corpus['did'] == doc_id]
         doc_content = data['body'].values[0]
+        #try:
         sentences = doc_content.split('.')
         sentences_scores = [[0]*3 for _ in range(len(sentences))]
         for (i, sentence) in enumerate(sentences):
@@ -62,14 +63,15 @@ for qid in q_line:
             sentences_scores[i][2] = 1 - spatial.distance.cosine(query_vector, get_embedding(sentence))
         sentences_scores = sorted(sentences_scores, key=lambda x: -x[2])
         final_doc = ""
-        final_doc += (queries_dict[qid].rstrip())
-        new_doc_len = len(final_doc.split(' '))
+        #final_doc += (queries_dict[qid].rstrip())
+        #new_doc_len = len(final_doc.split(' '))
+        new_doc_len = 0
         idx = 0
         while idx < len(sentences) and (new_doc_len + sentences_scores[idx][1]) < 512:
             final_doc += (sentences[sentences_scores[idx][0]] + '. ')
             new_doc_len += (sentences_scores[idx][1])
             idx += 1
-        output_file.write(str(qid) + '\t' + str(doc_id) + '\t' + final_doc + '\n')
+        output_file.write(str(qid) + '\t' + str(doc_id) + '\t' + queries_dict[qid].rstrip() + '\t' + final_doc + '\n')
         print(doc_id)
 output_file.close()            
 '''
